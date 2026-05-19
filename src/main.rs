@@ -22,7 +22,6 @@ impl OX {
         let h = self.h;
         let i = self.i;
         let mut win: bool = false;
-        println!(" {a} | {b} | {c} \n {d} | {e} | {f} \n {g} | {h} | {i}");
         println!(
             "+----+----+----+\n| {a}  | {b}  | {c}  | \n+----+----+----+\n| {d}  | {e}  | {f}  | \n+----+----+----+\n| {g}  | {h}  | {i}  | \n+----+----+----+\n"
         );
@@ -88,30 +87,37 @@ fn input() {
         h: '_',
         i: '_',
     };
-    loop {
-        let p1 = 'X';
-        println!("Turn: Player 1 (X)\n");
-        eprint!("Enter your move(1-9): ");
-        if players.manuplicate_ox(OX::playerinput(), p1) {
-            if players.game_over(p1) {
-                println!("Yay, Player 1 (X) won !");
-                break;
+    'outer: loop {
+        'p1: loop {
+            let p1 = 'X';
+            println!("Turn: Player 1 (X)\n");
+            eprint!("Enter your move(1-9): ");
+            if players.manuplicate_ox(OX::playerinput(), p1) {
+                if players.game_over(p1) {
+                    println!("Yay, Player 1 (X) won !");
+                    break 'outer;
+                }
+            } else {
+                println!("\nOX: baka! Can't you see it is already pre-occupied\n");
+                continue 'p1;
             }
-        } else if players.manuplicate_ox(OX::playerinput(), p1) == false {
-            println!("OX: baka! Can't you see it is already pre-occupied by your opponent ");
-            continue;
+            break 'p1;
         }
-        println!("Turn: Player 2 (O)\n");
-        eprint!("Enter your move(1-9): ");
-        let p2 = 'O';
-        if players.manuplicate_ox(OX::playerinput(), p2) {
-            if players.game_over(p2) {
-                println!("Yay, Player 2 (O) won !");
-                break;
+        'p2: loop {
+            println!("Turn: Player 2 (O)\n");
+            eprint!("Enter your move(1-9): ");
+            let p2 = 'O';
+            if players.manuplicate_ox(OX::playerinput(), p2) {
+                if players.game_over(p2) {
+                    println!("Yay, Player 2 (O) won !");
+                    break 'outer;
+                }
+            } else {
+                println!("\n1OX: baka! Can't you see it is already pre-occupied \n");
+                players.game_over(p2);
+                continue 'p2;
             }
-        } else if players.manuplicate_ox(OX::playerinput(), p2) == false {
-            println!("1OX: baka! Can't you see it is already pre-occupied by your opponent ");
-            continue;
+            break 'p2;
         }
     }
 }
