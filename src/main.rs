@@ -99,6 +99,7 @@ fn input() {
                 }
             } else {
                 println!("\nOX: baka! Can't you see it is already pre-occupied\n");
+                players.game_over(p1);
                 continue 'p1;
             }
             break 'p1;
