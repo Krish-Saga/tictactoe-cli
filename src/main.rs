@@ -31,7 +31,7 @@ impl OX {
             "+----+----+----+\n| {a}  | {b}  | {c}  | \n+----+----+----+\n| {d}  | {e}  | {f}  | \n+----+----+----+\n| {g}  | {h}  | {i}  | \n+----+----+----+\n"
         );
     }
-    fn game_over(&self, p: char) -> bool {
+    fn win_check(&self, p: char) -> bool {
         let a = self.a;
         let b = self.b;
         let c = self.c;
@@ -53,6 +53,7 @@ impl OX {
         {
             win = true;
         }
+
         win
     }
 
@@ -77,10 +78,10 @@ impl OX {
         } else if n == 9 && self.i == '_' {
             self.i = p;
         } else if n > 9 {
-            println!("Baka ! Enter number in between 1 to 9");
+            println!("Baka ! Enter number in between 1 to 9\n");
             noerr = false;
         } else {
-            println!("Baka ! Can't you see it is pre-occupied ?");
+            println!("Baka ! Can't you see it is pre-occupied ?\n");
             noerr = false;
         }
         noerr
@@ -110,6 +111,7 @@ fn main() {
         h: '_',
         i: '_',
     };
+    let mut turn = 0;
     players.board_state();
     'outer: loop {
         'p1: loop {
@@ -117,9 +119,14 @@ fn main() {
             println!("Turn: Player 1 (X)\n");
             eprint!("Enter your move(1-9): ");
             if players.manuplicate_ox(OX::playerinput(), p1) {
-                if players.game_over(p1) {
+                turn += 1;
+                if players.win_check(p1) {
                     players.board_state();
                     println!("Yay, Player 1 ( X ) won !");
+                    break 'outer;
+                } else if turn == 9 {
+                    players.board_state();
+                    println!("OX: it's a draw ");
                     break 'outer;
                 }
                 players.board_state();
@@ -134,9 +141,14 @@ fn main() {
             println!("Turn: Player 2 (O)\n");
             eprint!("Enter your move(1-9): ");
             if players.manuplicate_ox(OX::playerinput(), p2) {
-                if players.game_over(p2) {
+                turn += 1;
+                if players.win_check(p2) {
                     players.board_state();
                     println!("Yay, Player 2 ( O ) won !");
+                    break 'outer;
+                } else if turn == 9 {
+                    players.board_state();
+                    println!("OX: it's a draw ");
                     break 'outer;
                 }
                 players.board_state();
