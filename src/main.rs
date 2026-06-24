@@ -13,6 +13,7 @@ struct OX {
 
 impl OX {
     fn board_state(&self) {
+        print!("\x1B[2J\x1B[1;1H");
         let a = self.a;
         let b = self.b;
         let c = self.c;
@@ -22,6 +23,10 @@ impl OX {
         let g = self.g;
         let h = self.h;
         let i = self.i;
+        println!(
+            "                               ==============================\n                                       O X  G A M E\n                               =============================="
+        );
+        println!("Player 1 (X)\n------------\n    vs\n------------\nPlayer 2 (O)\n");
         println!(
             "+----+----+----+\n| {a}  | {b}  | {c}  | \n+----+----+----+\n| {d}  | {e}  | {f}  | \n+----+----+----+\n| {g}  | {h}  | {i}  | \n+----+----+----+\n"
         );
@@ -50,12 +55,9 @@ impl OX {
         }
         win
     }
-    fn clearing() {
-        print!("\x1B[2J\x1B[1;1H");
-    }
 
-    fn manuplicate_ox(&mut self, n: u8, p: char) -> u8 {
-        let mut err = 1;
+    fn manuplicate_ox(&mut self, n: u8, p: char) -> bool {
+        let mut noerr = true;
         if n == 1 && self.a == '_' {
             self.a = p;
         } else if n == 2 && self.b == '_' {
@@ -75,11 +77,13 @@ impl OX {
         } else if n == 9 && self.i == '_' {
             self.i = p;
         } else if n > 9 {
-            err = 3;
+            println!("Baka ! Enter number in between 1 to 9");
+            noerr = false;
         } else {
-            err = 2;
+            println!("Baka ! Can't you see it is pre-occupied ?");
+            noerr = false;
         }
-        err
+        noerr
     }
     // Player input just takes input
     fn playerinput() -> u8 {
@@ -94,7 +98,7 @@ impl OX {
         pinput
     }
 }
-fn input() {
+fn main() {
     let mut players = OX {
         a: '_',
         b: '_',
@@ -106,29 +110,22 @@ fn input() {
         h: '_',
         i: '_',
     };
+    players.board_state();
     'outer: loop {
         'p1: loop {
             let p1 = 'X';
             println!("Turn: Player 1 (X)\n");
             eprint!("Enter your move(1-9): ");
-            if players.manuplicate_ox(OX::playerinput(), p1) == 1 {
+            if players.manuplicate_ox(OX::playerinput(), p1) {
                 if players.game_over(p1) {
                     players.board_state();
                     println!("Yay, Player 1 ( X ) won !");
                     break 'outer;
                 }
-                OX::clearing();
                 players.board_state();
-            } else if players.manuplicate_ox(OX::playerinput(), p1) == 2 {
-                println!("\nOX: baka! Can't you see it is already pre-occupied\n");
-                players.board_state();
-                continue 'p1;
             } else {
-                println!("Baka ! Enter number in between 1 to 9");
-                players.board_state();
                 continue 'p1;
             }
-            //           OX::clearing();
 
             break 'p1;
         }
@@ -136,35 +133,17 @@ fn input() {
             let p2 = 'O';
             println!("Turn: Player 2 (O)\n");
             eprint!("Enter your move(1-9): ");
-            if players.manuplicate_ox(OX::playerinput(), p2) == 1 {
+            if players.manuplicate_ox(OX::playerinput(), p2) {
                 if players.game_over(p2) {
                     players.board_state();
                     println!("Yay, Player 2 ( O ) won !");
                     break 'outer;
                 }
-                OX::clearing();
                 players.board_state();
-            } else if players.manuplicate_ox(OX::playerinput(), p2) == 2 {
-                println!("\n1OX: baka! Can't you see it is already pre-occupied \n");
-                players.board_state();
-                continue 'p2;
             } else {
-                println!("Baka ! Enter number in between 1 to 9");
-                players.board_state();
                 continue 'p2;
             }
             break 'p2;
         }
     }
-}
-
-fn main() {
-    println!(
-        "                               ==============================\n                                       O X  G A M E\n                               =============================="
-    );
-    println!("Player 1 (X) vs\nPlayer 2 (O)\n");
-    println!(
-        "+----+----+----+\n| 1  | 2  | 3  | \n+----+----+----+\n| 4  | 5  | 6  | \n+----+----+----+\n| 7  | 8  | 9  | \n+----+----+----+\n"
-    );
-    input();
 }
