@@ -1,46 +1,36 @@
 use std::io;
-struct OX {
-    a: char,
-    b: char,
-    c: char,
-    d: char,
-    e: char,
-    f: char,
-    g: char,
-    h: char,
-    i: char,
-}
+struct OX([char; 9]);
 
 impl OX {
     fn board_state(&self) {
         print!("\x1B[2J\x1B[1;1H");
-        let a = self.a;
-        let b = self.b;
-        let c = self.c;
-        let d = self.d;
-        let e = self.e;
-        let f = self.f;
-        let g = self.g;
-        let h = self.h;
-        let i = self.i;
         println!(
             "                               ==============================\n                                       O X  G A M E\n                               =============================="
         );
         println!("Player 1 (X)\n------------\n    vs\n------------\nPlayer 2 (O)\n");
         println!(
-            "+----+----+----+\n| {a}  | {b}  | {c}  | \n+----+----+----+\n| {d}  | {e}  | {f}  | \n+----+----+----+\n| {g}  | {h}  | {i}  | \n+----+----+----+\n"
+            "+----+----+----+\n| {}  | {}  | {}  | \n+----+----+----+\n| {}  | {}  | {}  | \n+----+----+----+\n| {}  | {}  | {}  | \n+----+----+----+\n",
+            self.0[0],
+            self.0[1],
+            self.0[2],
+            self.0[3],
+            self.0[4],
+            self.0[5],
+            self.0[6],
+            self.0[7],
+            self.0[8]
         );
     }
     fn win_check(&self, p: char) -> bool {
-        let a = self.a;
-        let b = self.b;
-        let c = self.c;
-        let d = self.d;
-        let e = self.e;
-        let f = self.f;
-        let g = self.g;
-        let h = self.h;
-        let i = self.i;
+        let a = self.0[0];
+        let b = self.0[1];
+        let c = self.0[2];
+        let d = self.0[3];
+        let e = self.0[4];
+        let f = self.0[5];
+        let g = self.0[6];
+        let h = self.0[7];
+        let i = self.0[8];
         let mut win: bool = false;
         if (a == p && b == p && c == p)
             || (d == p && e == p && f == p)
@@ -57,26 +47,10 @@ impl OX {
         win
     }
 
-    fn manuplicate_ox(&mut self, n: u8, p: char) -> bool {
+    fn manuplicate_ox(&mut self, n: usize, p: char) -> bool {
         let mut noerr = true;
-        if n == 1 && self.a == '_' {
-            self.a = p;
-        } else if n == 2 && self.b == '_' {
-            self.b = p;
-        } else if n == 3 && self.c == '_' {
-            self.c = p;
-        } else if n == 4 && self.d == '_' {
-            self.d = p;
-        } else if n == 5 && self.e == '_' {
-            self.e = p;
-        } else if n == 6 && self.f == '_' {
-            self.f = p;
-        } else if n == 7 && self.g == '_' {
-            self.g = p;
-        } else if n == 8 && self.h == '_' {
-            self.h = p;
-        } else if n == 9 && self.i == '_' {
-            self.i = p;
+        if self.0[n] == '_' {
+            self.0[n] = p;
         } else if n > 9 {
             println!("Baka ! Enter number in between 1 to 9\n");
             noerr = false;
@@ -87,12 +61,12 @@ impl OX {
         noerr
     }
     // Player input just takes input
-    fn playerinput() -> u8 {
+    fn playerinput() -> usize {
         let mut pinput = String::new();
         io::stdin()
             .read_line(&mut pinput)
             .expect("failed to take input ");
-        let pinput: u8 = pinput
+        let pinput: usize = pinput
             .trim()
             .parse()
             .expect("Man please enter numbers only ");
@@ -100,17 +74,7 @@ impl OX {
     }
 }
 fn main() {
-    let mut players = OX {
-        a: '_',
-        b: '_',
-        c: '_',
-        d: '_',
-        e: '_',
-        f: '_',
-        g: '_',
-        h: '_',
-        i: '_',
-    };
+    let mut players = OX(['_', '_', '_', '_', '_', '_', '_', '_', '_']);
     let mut turn = 0;
     players.board_state();
     'outer: loop {
