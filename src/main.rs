@@ -74,11 +74,12 @@ impl OX {
         }
         square
     }
-    fn get_move(&self) -> usize {
+    fn get_move(&self, letter: char) -> usize {
         let mut valid_square = false;
         let mut value = 0;
-        // println!("\n Available Moves: {:?}", self.available_moves());
+        self.board_state();
         while !valid_square {
+            println!("Turn: Player ( {letter} ) \n");
             eprint!("Enter your move(1-9): ");
             let mut pinput = String::new();
 
@@ -95,6 +96,7 @@ impl OX {
             } else {
                 self.board_state();
                 println!("OX: Baka ! That's an Invalid Move \n");
+                println!("Available Moves: {:?}\n", self.available_moves());
             }
         }
 
@@ -105,45 +107,23 @@ impl Player {}
 fn main_game() {
     let mut board = OX(['_'; 9]);
     board.board_state();
-    'outer: loop {
-        'p1: loop {
-            let letter = 'X';
-            println!("Turn: Player ( {letter} ) \n");
-            if board.manuplicate_ox(board.get_move(), letter) {
-                if board.win_check(letter) {
-                    board.board_state();
-                    println!("Yay, Player  ( {letter} ) won !");
-                    break 'outer;
-                } else if board.empty_squares() == 0 {
-                    board.board_state();
-                    println!("OX: it's a draw ");
-                    break 'outer;
-                }
-                board.board_state();
-            } else {
-                continue 'p1;
-            }
-
-            break 'p1;
+    let mut letter = 'X';
+    while board.empty_squares() != 0 {
+        board.manuplicate_ox(board.get_move(letter), letter);
+        if board.win_check(letter) {
+            board.board_state();
+            println!("Yay, Player  ( {letter} ) won !");
+            break;
+        } else if board.empty_squares() == 0 {
+            board.board_state();
+            println!("OX: it's a draw ");
+            break;
         }
-        'p2: loop {
-            let letter = 'O';
-            println!("Turn: Player ( {letter} )\n");
-            if board.manuplicate_ox(board.get_move(), letter) {
-                if board.win_check(letter) {
-                    board.board_state();
-                    println!("Yay, Player ( {letter} ) won !");
-                    break 'outer;
-                } else if board.empty_squares() == 0 {
-                    board.board_state();
-                    println!("OX: it's a draw ");
-                    break 'outer;
-                }
-                board.board_state();
-            } else {
-                continue 'p2;
-            }
-            break 'p2;
+
+        if letter == 'X' {
+            letter = 'O';
+        } else {
+            letter = 'X';
         }
     }
 }
