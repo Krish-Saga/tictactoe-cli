@@ -75,34 +75,29 @@ impl OX {
         square
     }
     fn move_check(&self) -> usize {
-        println!("\n Available Moves: {:?}", self.available_moves());
-        let val = Player::playerinput();
-        if self.available_moves().contains(&val) {
-        } else if val > 9 {
-            println!("Baka ! Can't you see it is pre-occupied ?\n");
-            OX::move_check(&self);
-        } else {
-            println!("Baka ! Can't you see it is pre-occupied ?\n");
-            OX::move_check(&self);
-        }
-        val
-    }
-}
-impl Player {
-    // Player input just takes input
-    fn playerinput() -> usize {
         let mut pinput = String::new();
-
         io::stdin()
             .read_line(&mut pinput)
             .expect("failed to take input ");
+        self.board_state();
         let pinput: usize = pinput
             .trim()
             .parse()
             .expect("Man please enter numbers only ");
+        // println!("\n Available Moves: {:?}", self.available_moves());
+        if self.available_moves().contains(&pinput) {
+        } else if pinput > 9 {
+            println!("Baka ! Can't you see it is pre-occupied ?\n");
+            self.move_check();
+        } else {
+            println!("Baka ! Can't you see it is pre-occupied ?\n");
+            self.move_check();
+        }
+
         pinput
     }
 }
+impl Player {}
 fn main_game() {
     let mut board = OX(['_'; 9]);
     let mut turn = 0;
