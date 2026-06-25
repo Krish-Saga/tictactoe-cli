@@ -1,4 +1,7 @@
 use std::io;
+struct Player {
+    letter: char,
+}
 struct OX([char; 9]);
 
 impl OX {
@@ -21,7 +24,7 @@ impl OX {
             self.0[8]
         );
     }
-    fn win_check(&self, p: char) -> bool {
+    fn win_check(&self, letter: char) -> bool {
         let a = self.0[0];
         let b = self.0[1];
         let c = self.0[2];
@@ -32,14 +35,14 @@ impl OX {
         let h = self.0[7];
         let i = self.0[8];
         let mut win: bool = false;
-        if (a == p && b == p && c == p)
-            || (d == p && e == p && f == p)
-            || (g == p && h == p && i == p)
-            || (a == p && d == p && g == p)
-            || (c == p && f == p && i == p)
-            || (a == p && c == p && i == p)
-            || (c == p && e == p && g == p)
-            || (b == p && e == p && h == p)
+        if (a == letter && b == letter && c == letter)
+            || (d == letter && e == letter && f == letter)
+            || (g == letter && h == letter && i == letter)
+            || (a == letter && d == letter && g == letter)
+            || (c == letter && f == letter && i == letter)
+            || (a == letter && c == letter && i == letter)
+            || (c == letter && e == letter && g == letter)
+            || (b == letter && e == letter && h == letter)
         {
             win = true;
         }
@@ -47,22 +50,49 @@ impl OX {
         win
     }
 
-    fn manuplicate_ox(&mut self, n: usize, p: char) -> bool {
-        let mut noerr = true;
-        if self.0[n] == '_' {
-            self.0[n] = p;
-        } else if n > 9 {
-            println!("Baka ! Enter number in between 1 to 9\n");
-            noerr = false;
+    fn manuplicate_ox(&mut self, square: usize, letter: char) -> bool {
+        if self.0[square - 1] == '_' {
+            self.0[square - 1] = letter;
+        }
+        true
+    }
+    fn available_moves(&self) -> Vec<usize> {
+        let mut avail_mov: Vec<usize> = Vec::new();
+        for i in 1..=9 {
+            if self.0[i - 1] == '_' {
+                avail_mov.push(i);
+            }
+        }
+        avail_mov
+    }
+    fn empty_squares(&self) -> usize {
+        let mut square = 0;
+        for i in 1..=9 {
+            if self.0[i - 1] == '_' {
+                square += 1;
+            }
+        }
+        square
+    }
+    fn move_check(&self) -> usize {
+        println!("\n Available Moves: {:?}", self.available_moves());
+        let val = Player::playerinput();
+        if self.available_moves().contains(&val) {
+        } else if val > 9 {
+            println!("Baka ! Can't you see it is pre-occupied ?\n");
+            OX::move_check(&self);
         } else {
             println!("Baka ! Can't you see it is pre-occupied ?\n");
-            noerr = false;
+            OX::move_check(&self);
         }
-        noerr
+        val
     }
+}
+impl Player {
     // Player input just takes input
     fn playerinput() -> usize {
         let mut pinput = String::new();
+
         io::stdin()
             .read_line(&mut pinput)
             .expect("failed to take input ");
@@ -73,27 +103,27 @@ impl OX {
         pinput
     }
 }
-fn main() {
-    let mut players = OX(['_', '_', '_', '_', '_', '_', '_', '_', '_']);
+fn main_game() {
+    let mut board = OX(['_'; 9]);
     let mut turn = 0;
-    players.board_state();
+    board.board_state();
     'outer: loop {
         'p1: loop {
-            let p1 = 'X';
-            println!("Turn: Player 1 (X)\n");
+            let letter = 'X';
+            println!("Turn: Player ( {letter} ) \n");
             eprint!("Enter your move(1-9): ");
-            if players.manuplicate_ox(OX::playerinput(), p1) {
+            if board.manuplicate_ox(board.move_check(), letter) {
                 turn += 1;
-                if players.win_check(p1) {
-                    players.board_state();
-                    println!("Yay, Player 1 ( X ) won !");
+                if board.win_check(letter) {
+                    board.board_state();
+                    println!("Yay, Player  ( {letter} ) won !");
                     break 'outer;
                 } else if turn == 9 {
-                    players.board_state();
+                    board.board_state();
                     println!("OX: it's a draw ");
                     break 'outer;
                 }
-                players.board_state();
+                board.board_state();
             } else {
                 continue 'p1;
             }
@@ -101,25 +131,28 @@ fn main() {
             break 'p1;
         }
         'p2: loop {
-            let p2 = 'O';
-            println!("Turn: Player 2 (O)\n");
+            let letter = 'O';
+            println!("Turn: Player ( {letter} )\n");
             eprint!("Enter your move(1-9): ");
-            if players.manuplicate_ox(OX::playerinput(), p2) {
+            if board.manuplicate_ox(board.move_check(), letter) {
                 turn += 1;
-                if players.win_check(p2) {
-                    players.board_state();
-                    println!("Yay, Player 2 ( O ) won !");
+                if board.win_check(letter) {
+                    board.board_state();
+                    println!("Yay, Player ( {letter} ) won !");
                     break 'outer;
                 } else if turn == 9 {
-                    players.board_state();
+                    board.board_state();
                     println!("OX: it's a draw ");
                     break 'outer;
                 }
-                players.board_state();
+                board.board_state();
             } else {
                 continue 'p2;
             }
             break 'p2;
         }
     }
+}
+fn main() {
+    main_game();
 }
