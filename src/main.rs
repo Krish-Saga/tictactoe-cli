@@ -1,8 +1,9 @@
 use rand::prelude::*;
-use std::io;
+use std::{cmp::max, io};
 struct OX([char; 9]);
 struct Player;
 struct DumbComputer;
+// struct SmartComputer;
 
 impl OX {
     fn board_state(state: Vec<char>) {
@@ -40,7 +41,7 @@ impl OX {
             || (g == letter && h == letter && i == letter)
             || (a == letter && d == letter && g == letter)
             || (c == letter && f == letter && i == letter)
-            || (a == letter && c == letter && i == letter)
+            || (a == letter && e == letter && i == letter)
             || (c == letter && e == letter && g == letter)
             || (b == letter && e == letter && h == letter)
         {
@@ -80,6 +81,57 @@ impl OX {
             }
         }
         square
+    }
+    fn minimax(&mut self, depth: usize, is_maximizing: bool) -> isize {
+        let max_player = 'X';
+        let other_player = 'O';
+        if self.win_check(max_player) {
+            return 1;
+        } else if self.win_check(other_player) {
+            return -1;
+        } else if self.empty_squares() == 0 {
+            return 0;
+        }
+        let undo_move = '_';
+        if is_maximizing {
+            let mut best_score = -100000;
+            for moves in self.available_moves() {
+                self.manuplicate_ox(moves, max_player);
+                let score = self.minimax(depth + 1, false);
+                self.manuplicate_ox(moves, undo_move);
+                best_score = max(score, best_score);
+            }
+            return best_score;
+        } else {
+            let mut best_score = 100000;
+            for moves in self.available_moves() {
+                self.manuplicate_ox(moves, other_player);
+                let score = self.minimax(depth + 1, true);
+                self.manuplicate_ox(moves, undo_move);
+                best_score = max(score, best_score);
+            }
+            return best_score;
+        }
+    }
+
+    fn get_computer_move(&mut self) -> usize {
+        let mut best_move = 0;
+        let max_player = 'X';
+        let undo_move = '_';
+        let mut best_score = -10000;
+        if self.available_moves().len() == 9 {
+            best_move = DumbComputer::get_move(self.available_moves());
+        }
+        for moves in self.available_moves() {
+            self.manuplicate_ox(moves, max_player);
+            let score = self.minimax(0, false);
+            self.manuplicate_ox(moves, undo_move);
+            if score > best_score {
+                best_score = score;
+                best_move = moves;
+            }
+        }
+        best_move
     }
 }
 impl Player {
@@ -130,6 +182,21 @@ impl DumbComputer {
         val
     }
 }
+// impl SmartComputer {
+//     fn get_move(available_moves: Vec<usize>) -> usize {
+//         let mut best_move;
+//         let mut best_score = -10000;
+//         if available_moves.len() == 9 {
+//             best_move = DumbComputer::get_move(available_moves);
+//         }
+//         for move in available_moves {
+//             self.
+//             best_score =
+//         }
+//         best_move
+//     }
+// }
+// impl SmartComputer {}
 fn main_game() {
     let mut board = OX(['_'; 9]);
 
@@ -138,14 +205,15 @@ fn main_game() {
     DumbComputer::get_move(board.available_moves());
     while board.empty_squares() != 0 {
         println!("Turn: Player ( {} )\n", letter);
+        let computer_move = board.get_computer_move();
         if letter == 'X' {
+            board.manuplicate_ox(computer_move, letter);
+            OX::board_state(board.state());
+        } else {
             board.manuplicate_ox(
                 Player::get_move(board.available_moves(), board.state(), letter),
                 letter,
             );
-            OX::board_state(board.state());
-        } else {
-            board.manuplicate_ox(DumbComputer::get_move(board.available_moves()), letter);
             OX::board_state(board.state());
         }
 
@@ -166,5 +234,14 @@ fn main_game() {
     }
 }
 fn main() {
-    main_game();
+    // main_game();
+    let mut board = OX(['_'; 9]);
+
+    let computer_move = board.get_computer_move();
+    OX::board_state(board.state());
+    print!("{computer_move}");
+
+    board.manuplicate_ox(3, 'O');
+    OX::board_state(board.state());
+    print!("{computer_move}");
 }
