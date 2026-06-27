@@ -76,7 +76,7 @@ impl OX {
         }
         state
     }
-    fn empty_squares(&self) -> usize {
+    fn empty_squares(&self) -> isize {
         let mut square = 0;
         for i in 1..=9 {
             if self.0[i - 1] == '_' {
@@ -89,9 +89,9 @@ impl OX {
         let max_player = 'X';
         let other_player = 'O';
         if self.win_check(max_player) {
-            return 1;
+            return 1 * 1 + self.empty_squares();
         } else if self.win_check(other_player) {
-            return -1;
+            return -1 * (1 + self.empty_squares());
         } else if self.empty_squares() == 0 {
             return 0;
         }
@@ -122,17 +122,19 @@ impl OX {
         let mut best_move = 0;
         let max_player = 'X';
         let undo_move = '_';
-        let mut best_score = -10000;
+        let mut best_score = -100;
         if self.available_moves().len() == 9 {
-            best_move = DumbComputer::get_move(self.available_moves());
-        }
-        for moves in self.available_moves() {
-            self.0[moves - 1] = max_player;
-            let score = self.minimax(0, false);
-            self.0[moves - 1] = undo_move;
-            if score > best_score {
-                best_score = score;
-                best_move = moves;
+            let mut rng = rand::rng();
+            best_move = rng.random_range(2..=9);
+        } else {
+            for moves in self.available_moves() {
+                self.0[moves - 1] = max_player;
+                let score = self.minimax(0, false);
+                self.0[moves - 1] = undo_move;
+                if score > best_score {
+                    best_score = score;
+                    best_move = moves;
+                }
             }
         }
         best_move
@@ -206,7 +208,6 @@ fn main_game() {
 
     OX::board_state(board.state());
     let mut letter = 'X';
-    DumbComputer::get_move(board.available_moves());
     while board.empty_squares() != 0 {
         println!("Turn: Player ( {} )\n", letter);
         let computer_move = board.get_computer_move();
