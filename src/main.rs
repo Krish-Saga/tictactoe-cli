@@ -96,18 +96,19 @@ impl OX {
         if is_maximizing {
             let mut best_score = -100000;
             for moves in self.available_moves() {
-                self.manuplicate_ox(moves, max_player);
+                self.0[moves - 1] = max_player;
                 let score = self.minimax(depth + 1, false);
-                self.manuplicate_ox(moves, undo_move);
+                self.0[moves - 1] = undo_move;
                 best_score = max(score, best_score);
             }
             return best_score;
         } else {
             let mut best_score = 100000;
             for moves in self.available_moves() {
+                self.0[moves - 1] = other_player;
                 self.manuplicate_ox(moves, other_player);
                 let score = self.minimax(depth + 1, true);
-                self.manuplicate_ox(moves, undo_move);
+                self.0[moves - 1] = undo_move;
                 best_score = max(score, best_score);
             }
             return best_score;
@@ -123,9 +124,9 @@ impl OX {
             best_move = DumbComputer::get_move(self.available_moves());
         }
         for moves in self.available_moves() {
-            self.manuplicate_ox(moves, max_player);
+            self.0[moves - 1] = max_player;
             let score = self.minimax(0, false);
-            self.manuplicate_ox(moves, undo_move);
+            self.0[moves - 1] = undo_move;
             if score > best_score {
                 best_score = score;
                 best_move = moves;
@@ -234,14 +235,5 @@ fn main_game() {
     }
 }
 fn main() {
-    // main_game();
-    let mut board = OX(['_'; 9]);
-
-    let computer_move = board.get_computer_move();
-    OX::board_state(board.state());
-    print!("{computer_move}");
-
-    board.manuplicate_ox(3, 'O');
-    OX::board_state(board.state());
-    print!("{computer_move}");
+    main_game();
 }
