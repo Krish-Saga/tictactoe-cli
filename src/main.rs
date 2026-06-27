@@ -1,5 +1,8 @@
 use rand::prelude::*;
-use std::{cmp::max, io};
+use std::{
+    cmp::{max, min},
+    io,
+};
 struct OX([char; 9]);
 struct Player;
 struct DumbComputer;
@@ -109,7 +112,7 @@ impl OX {
                 self.manuplicate_ox(moves, other_player);
                 let score = self.minimax(depth + 1, true);
                 self.0[moves - 1] = undo_move;
-                best_score = max(score, best_score);
+                best_score = min(score, best_score);
             }
             return best_score;
         }
