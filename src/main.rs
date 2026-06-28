@@ -5,7 +5,6 @@ use std::{
 };
 struct OX([char; 9]);
 struct Player;
-struct DumbComputer;
 
 impl OX {
     fn choose_move() -> bool {
@@ -65,7 +64,7 @@ impl OX {
 ⣿⣾⡉⠉⣿⡈⣿⣿⣶⣶⣿⣷⣶⣉⣹⣷⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠁⠀
 ⣿⣞⡇⡆⣰⢲⣬⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠅⢠⣴⣶⡆⡒⡜
 ⣿⣿⡇⠆⢰⣒⣒⣒⣦⠍⠙⠛⠛⠿⠿⠿⠿⠛⠛⠉⠡⣶⣦⣤⣈⡿⠿⣧⠱⣘
-⡾⠷⠿⠿⡿⠿⠿⠿⠃⣠⣆⡀⠐⠠⠀⠄⢀⣀⣤⡀⠀⠙⢿⣿⣿⣿⣿⣶⣶⣧",
+⡾⠷⠿⠿⡿⠿⠿⠿⠃⣠⣆⡀⠐⠠⠀⠄⢀⣀⣤⡀⠀⠙⢿⣿⣿⣿⣿⣶⣶⣧\n",
             state[0],
             state[1],
             state[2],
@@ -133,17 +132,11 @@ impl OX {
         }
         square
     }
-    fn minimax(
-        &mut self,
-        depth: usize,
-        is_maximizing: bool,
-        max_player: char,
-        other_player: char,
-    ) -> isize {
+    fn minimax(&mut self, is_maximizing: bool, max_player: char, other_player: char) -> isize {
         if self.win_check(max_player) {
-            return 1 * 1 + self.empty_squares();
+            return 1 + self.empty_squares();
         } else if self.win_check(other_player) {
-            return -1 * (1 + self.empty_squares());
+            return -(1 + self.empty_squares());
         } else if self.empty_squares() == 0 {
             return 0;
         }
@@ -152,21 +145,21 @@ impl OX {
             let mut best_score = -100000;
             for moves in self.available_moves() {
                 self.0[moves - 1] = max_player;
-                let score = self.minimax(depth + 1, false, max_player, other_player);
+                let score = self.minimax(false, max_player, other_player);
                 self.0[moves - 1] = undo_move;
                 best_score = max(score, best_score);
             }
-            return best_score;
+            best_score
         } else {
             let mut best_score = 100000;
             for moves in self.available_moves() {
                 self.0[moves - 1] = other_player;
                 self.manuplicate_ox(moves, other_player);
-                let score = self.minimax(depth + 1, true, max_player, other_player);
+                let score = self.minimax(true, max_player, other_player);
                 self.0[moves - 1] = undo_move;
                 best_score = min(score, best_score);
             }
-            return best_score;
+            best_score
         }
     }
 
@@ -180,7 +173,7 @@ impl OX {
         } else {
             for moves in self.available_moves() {
                 self.0[moves - 1] = max_player;
-                let score = self.minimax(0, false, max_player, other_player);
+                let score = self.minimax(false, max_player, other_player);
                 self.0[moves - 1] = undo_move;
                 if score > best_score {
                     best_score = score;
@@ -223,37 +216,22 @@ impl Player {
     }
 }
 
-impl DumbComputer {
-    fn get_move(available_moves: Vec<usize>) -> usize {
-        let mut valid_square = false;
-        let mut val = 0;
-        while !valid_square {
-            let mut rng = rand::rng();
-            let square = rng.random_range(1..=9);
-            val = square;
-
-            if available_moves.contains(&square) {
-                valid_square = true;
-            }
-        }
-        val
-    }
-}
-// impl SmartComputer {
+// impl DumbComputer {
 //     fn get_move(available_moves: Vec<usize>) -> usize {
-//         let mut best_move;
-//         let mut best_score = -10000;
-//         if available_moves.len() == 9 {
-//             best_move = DumbComputer::get_move(available_moves);
+//         let mut valid_square = false;
+//         let mut val = 0;
+//         while !valid_square {
+//             let mut rng = rand::rng();
+//             let square = rng.random_range(1..=9);
+//             val = square;
+//
+//             if available_moves.contains(&square) {
+//                 valid_square = true;
+//             }
 //         }
-//         for move in available_moves {
-//             self.
-//             best_score =
-//         }
-//         best_move
+//         val
 //     }
 // }
-// impl SmartComputer {}
 fn main_game() {
     let mut board = OX(['_'; 9]);
     let mut turn;
@@ -294,7 +272,9 @@ fn main_game() {
         }
 
         if win {
-            println!("Yay, Player  ( {player} ) won !");
+            println!(
+                "                                       Chopper: Yay, Player  ( {player} ) won !\n\n"
+            );
             break;
         }
     }
