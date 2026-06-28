@@ -1,18 +1,38 @@
 use rand::prelude::*;
 use std::{
     cmp::{max, min},
-    io,
+    io::{self},
 };
 struct OX([char; 9]);
 struct Player;
 struct DumbComputer;
-// struct SmartComputer;
 
 impl OX {
+    fn choose_move() -> bool {
+        let mut select = String::new();
+
+        print!("\x1B[2J\x1B[1;1H");
+        println!(
+            "                               ====================================\n                                     WELCOME TO THE O X  G A M E\n                               ===================================="
+        );
+        println!("Computer : Hello Cutie 😉!\n");
+        println!("Note: Enter (Capital or Small ) .\nDon't enter number or program will break\n ");
+        eprint!("You will play as ( X or O ) : ");
+
+        io::stdin()
+            .read_line(&mut select)
+            .expect("Enter X or O please");
+        let select: char = select.trim().parse().expect("Enter X or O please");
+        if select == 'x' || select == 'X' {
+            return true;
+        }
+
+        false
+    }
     fn board_state(state: Vec<char>) {
         print!("\x1B[2J\x1B[1;1H");
         println!(
-            "                               ==============================\n                                       O X  G A M E\n                               =============================="
+            "                               ====================================\n                                     WELCOME TO THE O X  G A M E\n                               ===================================="
         );
         println!("Player 1 (X)\n------------\n    vs\n------------\nPlayer 2 (O)\n");
         println!(
@@ -38,7 +58,6 @@ impl OX {
         let g = self.0[6];
         let h = self.0[7];
         let i = self.0[8];
-        let mut win: bool = false;
         if (a == letter && b == letter && c == letter)
             || (d == letter && e == letter && f == letter)
             || (g == letter && h == letter && i == letter)
@@ -48,10 +67,10 @@ impl OX {
             || (c == letter && e == letter && g == letter)
             || (b == letter && e == letter && h == letter)
         {
-            win = true;
+            return true;
         }
 
-        win
+        false
     }
 
     fn manuplicate_ox(&mut self, square: usize, letter: char) {
@@ -85,9 +104,13 @@ impl OX {
         }
         square
     }
-    fn minimax(&mut self, depth: usize, is_maximizing: bool) -> isize {
-        let max_player = 'X';
-        let other_player = 'O';
+    fn minimax(
+        &mut self,
+        depth: usize,
+        is_maximizing: bool,
+        max_player: char,
+        other_player: char,
+    ) -> isize {
         if self.win_check(max_player) {
             return 1 * 1 + self.empty_squares();
         } else if self.win_check(other_player) {
@@ -100,7 +123,7 @@ impl OX {
             let mut best_score = -100000;
             for moves in self.available_moves() {
                 self.0[moves - 1] = max_player;
-                let score = self.minimax(depth + 1, false);
+                let score = self.minimax(depth + 1, false, max_player, other_player);
                 self.0[moves - 1] = undo_move;
                 best_score = max(score, best_score);
             }
@@ -110,7 +133,7 @@ impl OX {
             for moves in self.available_moves() {
                 self.0[moves - 1] = other_player;
                 self.manuplicate_ox(moves, other_player);
-                let score = self.minimax(depth + 1, true);
+                let score = self.minimax(depth + 1, true, max_player, other_player);
                 self.0[moves - 1] = undo_move;
                 best_score = min(score, best_score);
             }
@@ -118,18 +141,17 @@ impl OX {
         }
     }
 
-    fn get_computer_move(&mut self) -> usize {
+    fn get_computer_move(&mut self, max_player: char, other_player: char) -> usize {
         let mut best_move = 0;
-        let max_player = 'X';
         let undo_move = '_';
         let mut best_score = -100;
         if self.available_moves().len() == 9 {
             let mut rng = rand::rng();
-            best_move = rng.random_range(2..=9);
+            best_move = rng.random_range(1..=9);
         } else {
             for moves in self.available_moves() {
                 self.0[moves - 1] = max_player;
-                let score = self.minimax(0, false);
+                let score = self.minimax(0, false, max_player, other_player);
                 self.0[moves - 1] = undo_move;
                 if score > best_score {
                     best_score = score;
@@ -206,38 +228,39 @@ impl DumbComputer {
 fn main_game() {
     let mut board = OX(['_'; 9]);
 
+    let player;
+    let other_player;
+    if OX::choose_move() {
+        player = 'X';
+        other_player = 'O'
+    } else {
+        player = 'O';
+        other_player = 'X';
+    }
+
     OX::board_state(board.state());
-    let mut letter = 'X';
     while board.empty_squares() != 0 {
-        println!("Turn: Player ( {} )\n", letter);
-        let computer_move = board.get_computer_move();
-        if letter == 'X' {
-            board.manuplicate_ox(computer_move, letter);
-            OX::board_state(board.state());
-        } else {
-            board.manuplicate_ox(
-                Player::get_move(board.available_moves(), board.state(), letter),
-                letter,
-            );
-            OX::board_state(board.state());
-        }
+        println!("Turn: Player ( {} )\n", player);
+        let computer_move = board.get_computer_move(other_player, player);
+        board.manuplicate_ox(
+            Player::get_move(board.available_moves(), board.state(), player),
+            player,
+        );
+        OX::board_state(board.state());
+        board.manuplicate_ox(computer_move, other_player);
+        OX::board_state(board.state());
 
-        if board.win_check(letter) {
-            println!("Yay, Player  ( {letter} ) won !");
-            break;
-        } else if board.empty_squares() == 0 {
-            OX::board_state(board.state());
-            println!("OX: it's a draw ");
+        if board.win_check(player) {
+            println!("Yay, Player  ( {player} ) won !");
             break;
         }
-
-        if letter == 'X' {
-            letter = 'O';
-        } else {
-            letter = 'X';
-        }
+    }
+    if board.empty_squares() == 0 {
+        OX::board_state(board.state());
+        println!("OX: it's a draw ");
     }
 }
 fn main() {
     main_game();
+    // OX::start_screen();
 }
