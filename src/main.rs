@@ -15,7 +15,7 @@ impl OX {
         println!(
             "                               ====================================\n                                     WELCOME TO THE O X  G A M E\n                               ===================================="
         );
-        println!("Computer : Hello Cutie 😉!\n");
+        println!("Chopper : Hello Cutie 😉, Orewa Tony Tony Chopper!, \n");
         println!("Note: Enter (Capital or Small ) .\nDon't enter number or program will break\n ");
         eprint!("You will play as ( X or O ) : ");
 
@@ -227,30 +227,44 @@ impl DumbComputer {
 // impl SmartComputer {}
 fn main_game() {
     let mut board = OX(['_'; 9]);
+    let mut turn;
 
     let player;
     let other_player;
     if OX::choose_move() {
         player = 'X';
-        other_player = 'O'
+        other_player = 'O';
+        turn = true;
     } else {
         player = 'O';
         other_player = 'X';
+        turn = false;
     }
 
     OX::board_state(board.state());
     while board.empty_squares() != 0 {
-        println!("Turn: Player ( {} )\n", player);
         let computer_move = board.get_computer_move(other_player, player);
-        board.manuplicate_ox(
-            Player::get_move(board.available_moves(), board.state(), player),
-            player,
-        );
-        OX::board_state(board.state());
-        board.manuplicate_ox(computer_move, other_player);
-        OX::board_state(board.state());
+        let win;
+        println!("Turn: Player: {} \n", player);
+        if turn {
+            board.manuplicate_ox(
+                Player::get_move(board.available_moves(), board.state(), player),
+                player,
+            );
+            win = board.win_check(player);
 
-        if board.win_check(player) {
+            OX::board_state(board.state());
+            turn = false;
+        } else {
+            board.manuplicate_ox(computer_move, other_player);
+
+            win = board.win_check(other_player);
+
+            OX::board_state(board.state());
+            turn = true;
+        }
+
+        if win {
             println!("Yay, Player  ( {player} ) won !");
             break;
         }
