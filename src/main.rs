@@ -186,22 +186,26 @@ impl OX {
 }
 impl Player {
     fn get_move(available_moves: Vec<usize>, state: Vec<char>, letter: char) -> usize {
-        let mut valid_square = false;
-        let mut value = 0;
-        while !valid_square {
+        let mut value;
+        'outer: loop {
             eprint!("Enter your move(1-9): ");
             let mut pinput = String::new();
 
             io::stdin()
                 .read_line(&mut pinput)
                 .expect("failed to take input ");
-            let pinput: usize = pinput
-                .trim()
-                .parse()
-                .expect("Man please enter numbers only ");
+            let pinput = pinput.trim();
+            let pinput = match pinput.parse::<usize>() {
+                Ok(val) => val,
+                _ => {
+                    println!("\nChopper: Please enter number in between 0 to 9 :(\n");
+                    continue 'outer;
+                }
+            };
+
             value = pinput;
             if available_moves.contains(&pinput) {
-                valid_square = true;
+                break;
             } else {
                 OX::board_state(state.clone());
                 println!("\nOX: Baka ! That's an Invalid Move \n");
