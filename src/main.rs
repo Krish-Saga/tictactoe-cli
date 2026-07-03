@@ -21,7 +21,7 @@ impl OX {
 ⣷⣄⣘⡀⠘⠀⣉⠊⡄⡡⢈⡍⢠⢉⡋⢒⡀⠣⠑⢎⡱⢌⠲⡡⢎⡑⢎⠌⠀⠂
 ⣿⠏⠉⢰⡈⠷⠀⠇⠸⠁⠇⠀⠁⠆⠹⢆⢱⢉⡸⢀⠆⡈⠁⠷⣈⠸⡈⠀⠀⠆ \t Chopper: Hello Cutie 😉, Orewa Tony Tony Chopper!. 
 ⠁⠄⠒⠀⠁⠀⠀⠠⠀⠀⢀⠂⢀⠀⡀⠀⠀⠀⠁⠉⠊⠁⣍⠒⡌⠡⠁⢀⠈⠀
-⠀⠀⠀⠐⠈⠀⠀⣀⡢⣥⣴⣶⣶⣶⣦⣥⣤⢁⡀⠀⠄⠀⠀⠉⠰⣉⠖⣀⠀⢷ \t Chopper Note: Don't enter number or game will break.
+⠀⠀⠀⠐⠈⠀⠀⣀⡢⣥⣴⣶⣶⣶⣦⣥⣤⢁⡀⠀⠄⠀⠀⠉⠰⣉⠖⣀⠀⢷ \t Chopper Note: On entering number here it will automatically chooses X as computer.
 ⠀⠠⠀⠄⠀⢰⣿⣿⣿⣌⢿⣿⣿⣿⣿⣏⣵⣿⣿⣷⣦⣌⠀⠀⠀⠀⠘⠄⠀⠀
 ⣧⡄⠀⠀⠂⢸⣷⣘⠻⣿⣿⣿⣿⣿⣿⡿⠻⢛⣋⣥⣿⣿⣿⣦⡀⠈⢀⠀⠀⠀ 
 ⣿⣟⡷⡤⠀⣿⣥⣶⣶⣎⠃⢈⣿⣿⣿⣿⣶⣶⣮⣉⣿⣿⣿⣿⣿⣄⠀⠀⠁⡀
@@ -187,7 +187,7 @@ impl OX {
 impl Player {
     fn get_move(available_moves: Vec<usize>, state: Vec<char>, letter: char) -> usize {
         let mut value;
-        'outer: loop {
+        loop {
             eprint!("Enter your move(1-9): ");
             let mut pinput = String::new();
 
@@ -199,7 +199,7 @@ impl Player {
                 Ok(val) => val,
                 _ => {
                     println!("\nChopper: Please enter number in between 0 to 9 :(\n");
-                    continue 'outer;
+                    continue;
                 }
             };
 
