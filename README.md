@@ -6,17 +6,23 @@
 
 ## Installation
 
-Clone the repository:
+Clone the repository and build yourself :
 
 ```bash
 git clone https://github.com/Krish-Saga/tictactoe-cli.git
 cd tictactoe-cli
 ```
+
 or if you have rust installed you can use :
 
 ```bash
 cargo install --git https://github.com/Krish-Saga/tictactoe-cli
 ```
+or directly install from crates.io and run  like this :
+```bash
+cargo install tictactoe-cli
+```
+and enter the name after this to run `tictactoe-cli`
 
 ## Running game 
     
