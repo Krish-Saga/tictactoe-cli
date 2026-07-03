@@ -1,7 +1,11 @@
 [package]
 name = "tictactoe"
+license = "MIT"
 version = "0.1.0"
 edition = "2024"
+description = "A CLI tictactoe game with minimax algorithm"
+repository = "https://github.com/Krish-Saga/tictactoe-cli"
+readme = "README.md"
 
 [dependencies]
 rand = "0.10.1"
