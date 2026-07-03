@@ -1,5 +1,5 @@
 [package]
-name = "Tictactoe"
+name = "tictactoe-cli"
 license = "MIT"
 version = "0.1.0"
 edition = "2024"
